@@ -5,8 +5,7 @@ import {
   DELETE,
   LIKE,
   FETCH_BY_SEARCH,
-} from '../constants/actionTypes';
-
+} from "../constants/actionTypes";
 
 export default (state = [], action) => {
   switch (action.type) {
@@ -15,24 +14,26 @@ export default (state = [], action) => {
 
     case UPDATE:
     case LIKE:
-      return state.map((post) => post._id === action.payload._id ? action.payload : post);
-      
+      return state.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
+
     case FETCH_ALL:
-      return { 
-        ...state, 
+      return {
+        ...state,
         posts: action.payload.data,
         currentPage: action.payload.currentPage,
         numberOfPages: action.payload.numberOfPages,
-  };
-    
+      };
+
     case FETCH_BY_SEARCH:
       return {
         ...state,
-        posts: action.payload.data
+        posts: action.payload,
       };
 
     case CREATE:
-      return [ ...state, action.payload];
+      return [...state, action.payload];
 
     default:
       return state;
