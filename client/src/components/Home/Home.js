@@ -32,14 +32,14 @@ const Home = () => {
   const page = query.get("page") || 1;
   const searchQuery = query.get("searchQuery");
   const [search, setSearch] = useState("");
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState("");
 
   const searchPost = () => {
     if (search.trim() || tags) {
-      dispatch(getPostsBySearch({ search, tags: tags.join(",") }));
+      dispatch(getPostsBySearch({ search, tags }));
 
       history.push(
-        `/posts/search?searchQuery=${search || "none"}&tags=${tags.join(",")}`
+        `/posts/search?searchQuery=${search || "none"}&tags=${tags}`
       );
     } else {
       history.push("/");
@@ -52,9 +52,8 @@ const Home = () => {
     }
   };
 
-  const handleAdd = (tag) => {
-    console.log(tag);
-    return setTags((pre) => [...pre, tag]);
+  const handleKeyPressTags = (tag) => {
+    return setTags(tag.target.value);
   };
 
   const handleDelete = (tagToDelete) =>
@@ -88,13 +87,14 @@ const Home = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <ChipInput
-                style={{ margin: "10px 0" }}
-                value={tags}
-                onAdd={handleAdd}
-                onDelete={handleDelete}
-                label="Search Tags"
+              <TextField
+                name="tags"
                 variant="outlined"
+                label="Search Tags"
+                onKeyPress={handleKeyPressTags}
+                fullWidth
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
               />
               <Button
                 onClick={searchPost}

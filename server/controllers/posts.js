@@ -32,8 +32,9 @@ export const getPostsBySearch = async (req, res) => {
   try {
     const title = new RegExp(searchQuery, "i");
     const titleRegex = new RegExp(title, "i");
+    const tagsRegex = tags.split(",").map((t) => new RegExp(t, "i"));
     const posts = await PostMessage.find({
-      $or: [{ title: titleRegex }, { tags: { $in: tags.split(",") } }],
+      $or: [{ title: titleRegex }, { tags: { $in: tagsRegex } }],
     });
     res.json({ data: posts });
   } catch (error) {
@@ -75,13 +76,15 @@ export const updatePost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   const { id } = req.params;
-
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).send(`No post with id: ${id}`);
-
-  await PostMessage.findByIdAndRemove(id);
-
-  res.json({ message: "Post deleted successfully" });
+  try {
+    await PostMessage.deleteOne({ _id: id });
+    res.json({ message: "Post deleted successfully" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send("Upp's...something went wrong");
+  }
 };
 
 export const likePost = async (req, res) => {
